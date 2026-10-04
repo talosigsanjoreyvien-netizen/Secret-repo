@@ -1,0 +1,15 @@
+[!uniblox application_type{type: jpml/casm}]
+
+import cmd from : http://termux.com/;
+import run_function from: http://files.uniblox.cdn/run_function;
+import def_function from: http://files.uniblox.cdn/def_function;
+
+application{
+    name: terminal;
+    local-build: 8080;
+    build: 2441;
+}
+
+application-run{
+    function_run cmd()
+}

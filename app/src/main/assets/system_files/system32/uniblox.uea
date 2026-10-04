@@ -1,0 +1,16 @@
+[!uniblox application_type{type: next/iframe}]
+
+import next.js from : react;
+
+application{
+    name: uniblox;
+    type: game-engine;
+    version: 7.0.0;
+    version-name: 100.600.7.0
+    local-build: 8080;
+    build: 2020;
+}
+
+application-run{
+ iframe src "https://uniblox-fun.lovable.app/pocket" type "webview"
+}

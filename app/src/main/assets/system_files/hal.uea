@@ -1,0 +1,23 @@
+[!uniblox application.type{type: c/asm}]
+
+import casm from: asm.package;
+import cmd.run from: ./system32/cmd.uea/
+
+application {
+    name:UNIBLOX os 7.0;
+    version:7.0.0.0.0.0;
+    version.name: 7.0;
+    local-build: 8080;
+    build: 2335;
+    type: asm;
+    build: linux; 
+}
+
+application run{
+    boot attempt cmd.run : uniblox start ./d fun.uniblox.system.boot ;
+    boot attempt_bios cmd.run : uniblox start ./b fun.uniblox.bios ;
+    boot attempt_bdos_0 cmd.run: uniblox escape;
+    boot attempt_bdos_1 cmd.run: uniblox escape explorer ./d error_escape;
+    boot attempt_bdos_2 cmd.run: uniblox escape explorer ./d error_escape;
+    boot attempt_bdos_3 cmd.run: uniblox escape bsod ./d show text: "your pc cant startup properly" + logs;
+}

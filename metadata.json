@@ -1,0 +1,6 @@
+{
+  "name": "Uniblox OS 7",
+  "description": "A desktop-like launcher operating system for Android with a Frutiger Aero aesthetic, featuring daily wallpapers and a glossy glass interface.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

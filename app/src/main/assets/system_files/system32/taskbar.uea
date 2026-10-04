@@ -1,0 +1,38 @@
+[!uniblox application_type{type: system/jpml}]
+
+import jpml from : http://unibloxcompiler.cdn/jpml;
+
+application{
+    name: taskbar;
+    version: 7.0;
+    version-name: 7.0;
+    local-build: 8080;
+    build: 2090;
+    localized-host: fun.cybercode.uniblox.os.7;
+    host: com.aistudio.unibloxos7.qwrz5;
+}
+
+application run{
+    create.button(type:btn;) {
+        btn_name = start_menu_button;
+        btn_script = "
+         onclick{
+            broadcast: "start_menu"; then: wait;
+            after onWAIT: exit onrepeatclick;
+         }
+         end;
+        "
+        btn_image = ./start_menu_button.java ;
+    }
+    duplicate.btn name = start_menu_button;
+    set {dupliname} to : search_bar_btn;
+    set {duplibtn_image} to : ./search_btn.java ;
+    
+
+    create.drawer{androidlib: querypackage} () {
+        drawer_height = "1"
+        drawer_width = "10"
+    }
+    
+}
+

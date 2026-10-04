@@ -1,0 +1,11 @@
+[!uniblox api{api.token: UBX-{$token}}]
+
+import uniblox_api_read_write from : http://files.uniblox.cdn/_export/uniblox_api ;
+import uniblox from : http://files.uniblox.cdn/_export/uniblox_api/ ;
+import uniblox_os_system_run from : ./system32;
+import cmd.run from : ./system32/cmd.uea ;
+
+api token-read: xzxxx-7272726666
+api token-write: xzxxx-6225516666
+
+export default package: api read_write;

@@ -1,0 +1,24 @@
+[!uniblox application_type{type: system/jpml}]
+
+import broadcast: start_menu;
+
+application{
+    name: start_menu;
+    version: 7.0;
+    version-name: 7.0;
+    host: androidapphost;
+    local-build: 8080;
+    build: 2090
+}
+
+application-run{
+    inactive = true
+
+
+    when recieved : start_menu: then;
+     set {inactive} to "false" 
+    ;
+
+
+    fetch start_menu from : MainActivity.kt;
+}
