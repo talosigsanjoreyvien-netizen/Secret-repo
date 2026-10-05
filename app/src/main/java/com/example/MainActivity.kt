@@ -891,27 +891,27 @@ fun DesktopScreen(
 
     val appStoreApps = remember {
         listOf(
-            WebApp("yt_web", "YouTube", "https://yt.be/", "📺", "Watch popular videos, music, and streams.", R.drawable.img_youtube_aero),
-            WebApp("pocket_web", "Uniblox Pocket", "https://uniblox-fun.lovable.app/pocket", "🧱", "Classic sandbox block-building game in pocket edition.", R.drawable.img_uniblox_pocket),
-            WebApp("vscode_web", "VS Code", "https://vscode.dev/", "💻", "Code on the go in a full-featured online development environment."),
-            WebApp("minecraft_web", "Minecraft", "https://enchanting-dasik-c072d6.netlify.app/", "⛏️", "Minecraft browser edition with block placing and world building.", R.drawable.img_minecraft_aero),
-            WebApp("bing_web", "Bing", "https://bing.com/", "🔍", "Search with Bing's smart AI features."),
-            WebApp("scratch_web", "Scratch", "https://scratch.mit.edu", "🐈", "Create interactive games, animations, and stories."),
-            WebApp("bloxd_web", "Bloxd", "https://bloxd.io/", "🧱", "Bloxd.io multiplayer block builder and mini-games."),
-            WebApp("cuberealm_web", "Cube Realm", "https://cuberealm.io/", "🌍", "Explore and build inside a vast cubic online sandbox."),
-            WebApp("audilos_web", "Uniblox Audilos", "https://uniblox-audilos.ai.studio/", "🎵", "Explore audio visualization and soundscapes on AI Studio."),
-            WebApp("drive_web", "Google Drive", "https://drive.google.com/", "📁", "Access and share your Google Drive files in cloud storage."),
-            WebApp("spotify_web", "Spotify", "https://spotify.com/", "🎵", "Listen to millions of songs, playlists, and podcasts."),
-            WebApp("github_web", "GitHub", "https://GitHub.com/", "🐙", "Manage, review, and commit code with GitHub on Uniblox OS."),
-            WebApp("gemini_web", "Gemini", "https://gemini.google.com/", "✨", "Supercharge your productivity with Google's advanced Gemini AI model.", R.drawable.img_gemini_aero),
-            WebApp("poxel_web", "Poxel", "https://poxel.io/", "🖼️", "Poxel.io interactive drawing, painting, and art space."),
-            WebApp("slither_web", "Slither.io", "http://slither.com/io", "🐍", "Grow as big as you can in the classic multiplayer snake battle arena."),
-            WebApp("flappy_web", "Flappy Bird", "https://flappybird.io/", "🐦", "Tempt your patience with the addictive Flappy Bird arcade game."),
-            WebApp("2048_web", "2048", "https://play2048.co/", "🔢", "Merge the numbered tiles to reach the 2048 block."),
-            WebApp("crazygames_web", "CrazyGames", "https://crazygames.com/", "🎮", "Instantly play thousands of high-quality online games."),
-            WebApp("lovable_web", "Lovable", "https://lovable.dev/", "❤️", "Design, build, and deploy apps in natural language."),
-            WebApp("turbowarp_web", "TurboWarp Embed", "https://turbowarp.org/1109852074/embed", "🚀", "Run Scratch games up to 20x faster with enhanced embeds."),
-            WebApp("speedtest_web", "Speedtest", "https://speedtest.com/", "⚡", "Instantly check your network download and upload speeds.")
+            WebApp("yt_web", "YouTube", "https://yt.be/", "📺", "Watch popular videos, music, and streams.", "https://img.icons8.com/color/512/youtube-play.png"),
+            WebApp("pocket_web", "Uniblox Pocket", "https://uniblox-fun.lovable.app/pocket", "🧱", "Classic sandbox block-building game in pocket edition.", "https://img.icons8.com/color/512/minecraft-creeper.png"),
+            WebApp("vscode_web", "VS Code", "https://vscode.dev/", "💻", "Code on the go in a full-featured online development environment.", "https://img.icons8.com/color/512/visual-studio-code-2019.png"),
+            WebApp("minecraft_web", "Minecraft", "https://enchanting-dasik-c072d6.netlify.app/", "⛏️", "Minecraft browser edition with block placing and world building.", "https://img.icons8.com/color/512/minecraft-dirt-block.png"),
+            WebApp("bing_web", "Bing", "https://bing.com/", "🔍", "Search with Bing's smart AI features.", "https://img.icons8.com/color/512/bing.png"),
+            WebApp("scratch_web", "Scratch", "https://scratch.mit.edu", "🐈", "Create interactive games, animations, and stories.", "https://img.icons8.com/color/512/scratch.png"),
+            WebApp("bloxd_web", "Bloxd", "https://bloxd.io/", "🧱", "Bloxd.io multiplayer block builder and mini-games.", "https://img.icons8.com/fluency/512/cube.png"),
+            WebApp("cuberealm_web", "Cube Realm", "https://cuberealm.io/", "🌍", "Explore and build inside a vast cubic online sandbox.", "https://img.icons8.com/color/512/earth-element.png"),
+            WebApp("audilos_web", "Uniblox Audilos", "https://uniblox-audilos.ai.studio/", "🎵", "Explore audio visualization and soundscapes on AI Studio.", "https://img.icons8.com/color/512/music-soundwave.png"),
+            WebApp("drive_web", "Google Drive", "https://drive.google.com/", "📁", "Access and share your Google Drive files in cloud storage.", "https://img.icons8.com/color/512/google-drive--v3.png"),
+            WebApp("spotify_web", "Spotify", "https://spotify.com/", "🎵", "Listen to millions of songs, playlists, and podcasts.", "https://img.icons8.com/color/512/spotify--v1.png"),
+            WebApp("github_web", "GitHub", "https://GitHub.com/", "🐙", "Manage, review, and commit code with GitHub on Uniblox OS.", "https://img.icons8.com/fluency/512/github.png"),
+            WebApp("gemini_web", "Gemini", "https://gemini.google.com/", "✨", "Supercharge your productivity with Google's advanced Gemini AI model.", "https://img.icons8.com/color/512/google-gemini.png"),
+            WebApp("poxel_web", "Poxel", "https://poxel.io/", "🖼️", "Poxel.io interactive drawing, painting, and art space.", "https://img.icons8.com/color/512/paint-palette.png"),
+            WebApp("slither_web", "Slither.io", "http://slither.com/io", "🐍", "Grow as big as you can in the classic multiplayer snake battle arena.", "https://img.icons8.com/color/512/snake.png"),
+            WebApp("flappy_web", "Flappy Bird", "https://flappybird.io/", "🐦", "Tempt your patience with the addictive Flappy Bird arcade game.", "https://img.icons8.com/color/512/flappy-bird.png"),
+            WebApp("2048_web", "2048", "https://play2048.co/", "🔢", "Merge the numbered tiles to reach the 2048 block.", "https://img.icons8.com/color/512/2048.png"),
+            WebApp("crazygames_web", "CrazyGames", "https://crazygames.com/", "🎮", "Instantly play thousands of high-quality online games.", "https://img.icons8.com/color/512/game-controller.png"),
+            WebApp("lovable_web", "Lovable", "https://lovable.dev/", "❤️", "Design, build, and deploy apps in natural language.", "https://img.icons8.com/color/512/heart-suit.png"),
+            WebApp("turbowarp_web", "TurboWarp Embed", "https://turbowarp.org/1109852074/embed", "🚀", "Run Scratch games up to 20x faster with enhanced embeds.", "https://img.icons8.com/color/512/space-ship.png"),
+            WebApp("speedtest_web", "Speedtest", "https://speedtest.com/", "⚡", "Instantly check your network download and upload speeds.", "https://img.icons8.com/color/512/speedometer.png")
         )
     }
 
@@ -1721,10 +1721,10 @@ fun DraggableDesktopIcon(
         ) {
             Surface(
                 modifier = Modifier
-                    .size(48.dp)
-                    .shadow(if (isDragging) 10.dp else 2.dp, CircleShape),
+                    .size(40.dp)
+                    .shadow(if (isDragging) 6.dp else 1.dp, CircleShape),
                 shape = CircleShape,
-                color = Color.White.copy(alpha = if (isDragging) 0.96f else 0.92f)
+                color = Color.White.copy(alpha = if (isDragging) 0.90f else 0.85f)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     when (val icon = item.icon) {
@@ -1732,22 +1732,30 @@ fun DraggableDesktopIcon(
                             AsyncImage(
                                 model = icon,
                                 contentDescription = item.label,
-                                modifier = Modifier.padding(6.dp).fillMaxSize()
+                                modifier = Modifier.padding(4.dp).fillMaxSize()
                             )
                         }
                         is Int -> {
                             AsyncImage(
                                 model = icon,
                                 contentDescription = item.label,
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.padding(2.dp).fillMaxSize()
                             )
                         }
                         is String -> {
-                            Text(
-                                text = icon,
-                                fontSize = 24.sp,
-                                textAlign = TextAlign.Center
-                            )
+                            if (icon.startsWith("http://") || icon.startsWith("https://")) {
+                                AsyncImage(
+                                    model = icon,
+                                    contentDescription = item.label,
+                                    modifier = Modifier.padding(4.dp).fillMaxSize()
+                                )
+                            } else {
+                                Text(
+                                    text = icon,
+                                    fontSize = 24.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                         is ImageVector -> {
                             Surface(
@@ -2083,6 +2091,28 @@ fun TaskbarIconItem(
                             modifier = Modifier.padding(7.dp).fillMaxSize()
                         )
                     }
+                    is Int -> {
+                        AsyncImage(
+                            model = icon,
+                            contentDescription = item.label,
+                            modifier = Modifier.padding(6.dp).fillMaxSize()
+                        )
+                    }
+                    is String -> {
+                        if (icon.startsWith("http://") || icon.startsWith("https://")) {
+                            AsyncImage(
+                                model = icon,
+                                contentDescription = item.label,
+                                modifier = Modifier.padding(6.dp).fillMaxSize()
+                            )
+                        } else {
+                            Text(
+                                text = icon,
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                     is ImageVector -> {
                         Icon(
                             imageVector = icon,
@@ -2177,18 +2207,6 @@ fun FullscreenTaskbar(
             .height(52.dp)
     ) {
         if (themeColors.isGlass) {
-            // Blurred wallpaper slice at the bottom of the screen
-            if (wallpaperRes != null) {
-                Image(
-                    painter = painterResource(wallpaperRes),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    alignment = Alignment.BottomCenter,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .blur(11.dp)
-                )
-            }
             // Aero frosted translucent gradient
             Box(
                 modifier = Modifier
@@ -2196,9 +2214,8 @@ fun FullscreenTaskbar(
                     .background(
                         Brush.verticalGradient(
                             listOf(
-                                Color.White.copy(alpha = 0.50f),
-                                Color.White.copy(alpha = 0.28f),
-                                Color(0xFFCCE8FF).copy(alpha = 0.38f)
+                                Color(0x77CCCCCC), // transparent gray on top (more visible)
+                                Color(0xBB00A2E8)  // blue at the bottom (more visible)
                             )
                         )
                     )
@@ -2467,6 +2484,32 @@ fun FullscreenTaskbarAppIcon(
                         .clip(CircleShape)
                 )
             }
+            is Int -> {
+                AsyncImage(
+                    model = icon,
+                    contentDescription = item.label,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                )
+            }
+            is String -> {
+                if (icon.startsWith("http://") || icon.startsWith("https://")) {
+                    AsyncImage(
+                        model = icon,
+                        contentDescription = item.label,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    Text(
+                        text = icon,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
             is ImageVector -> {
                 Icon(
                     imageVector = icon,
@@ -2565,19 +2608,7 @@ fun StartMenu(
         // Theme background effect with fixed glass blur
         Box(modifier = Modifier.fillMaxSize()) {
             if (themeColors.isGlass) {
-                // 1. Real blurred wallpaper background layer
-                if (wallpaperRes != null) {
-                    Image(
-                        painter = painterResource(wallpaperRes),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .blur(14.dp)
-                    )
-                }
-
-                // 2. Translucent frosted glass tint + Aero color tint
+                // Translucent frosted glass tint + Aero color tint
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -2597,9 +2628,8 @@ fun StartMenu(
                             } else {
                                 Brush.verticalGradient(
                                     listOf(
-                                        Color.White.copy(alpha = 0.60f),
-                                        Color.White.copy(alpha = 0.38f),
-                                        Color(0xFFD6EEFF).copy(alpha = 0.45f)
+                                        Color(0x77CCCCCC), // transparent gray on top (more visible)
+                                        Color(0xBB00A2E8)  // blue at the bottom (more visible)
                                     )
                                 )
                             }
@@ -3258,15 +3288,31 @@ fun AppWindow(
         shadowElevation = animatedElevation,
         border = if (windowState.isFullScreen) null else BorderStroke(1.5.dp, if (themeColors.isGlass) Color.White.copy(alpha = 0.5f) else Color(0xFF00A2E8).copy(alpha = if (isFocused) 0.6f else 0.2f))
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(if (windowState.isFullScreen) RectangleShape else RoundedCornerShape(animatedShape))
+                .background(
+                    if (themeColors.isGlass) {
+                        Brush.verticalGradient(
+                            listOf(
+                                Color(0x77CCCCCC), // transparent gray on top (more visible)
+                                Color(0xBB00A2E8)  // blue at the bottom (more visible)
+                            )
+                        )
+                    } else if (themeColors.isDeveloper) {
+                        SolidColor(Color(0xFF1E1E1E))
+                    } else if (themeColors.isMetro) {
+                        SolidColor(themeColors.background)
+                    } else {
+                        SolidColor(themeColors.background)
+                    }
+                )
+        ) {
             // Window Title Bar (Draggable if not fullscreen) - Transparent topbar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(
-                        if (windowState.isFullScreen) RectangleShape
-                        else RoundedCornerShape(topStart = animatedShape, topEnd = animatedShape)
-                    )
                     .then(
                         if (!windowState.isFullScreen) {
                             Modifier.pointerInput(Unit) {
@@ -3278,38 +3324,8 @@ fun AppWindow(
                         } else Modifier
                     )
             ) {
-                // Glass overlay without wallpaper backdrop layer
                 if (themeColors.isGlass) {
-                    // Translucent frosted glass tint + Aero color tint (transparent see-through)
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(
-                                if (themeColors.isColors) {
-                                    Brush.linearGradient(
-                                        listOf(
-                                            Color.Red.copy(0.15f),
-                                            Color.Yellow.copy(0.12f),
-                                            Color.Green.copy(0.12f),
-                                            Color.Blue.copy(0.15f),
-                                            Color.Magenta.copy(0.15f)
-                                        )
-                                    )
-                                } else if (themeColors.isRounded) {
-                                    SolidColor(Color.White.copy(alpha = 0.35f))
-                                } else {
-                                    Brush.verticalGradient(
-                                        listOf(
-                                            Color.White.copy(alpha = 0.30f),
-                                            Color.White.copy(alpha = 0.15f),
-                                            Color(0xFFD6EEFF).copy(alpha = 0.20f)
-                                        )
-                                    )
-                                }
-                            )
-                    )
-
-                    // 3. Specular gloss reflection (Windows 7 Aero trademark shine)
+                    // 1. Specular gloss reflection (Windows 7 Aero trademark shine)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -3317,15 +3333,15 @@ fun AppWindow(
                             .background(
                                 Brush.verticalGradient(
                                     listOf(
-                                        Color.White.copy(alpha = 0.50f),
-                                        Color.White.copy(alpha = 0.12f),
+                                        Color.White.copy(alpha = 0.40f),
+                                        Color.White.copy(alpha = 0.10f),
                                         Color.Transparent
                                     )
                                 )
                             )
                     )
 
-                    // 4. Top highlight border line for authentic glass shine
+                    // 2. Top highlight border line for authentic glass shine
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -3341,12 +3357,6 @@ fun AppWindow(
                                 )
                             )
                     )
-                } else if (themeColors.isDeveloper) {
-                    Box(modifier = Modifier.matchParentSize().background(Color(0xFF1E1E1E)))
-                } else if (themeColors.isMetro) {
-                    Box(modifier = Modifier.matchParentSize().background(themeColors.background))
-                } else {
-                    Box(modifier = Modifier.matchParentSize().background(themeColors.background))
                 }
 
                 Row(
@@ -3417,18 +3427,6 @@ fun AppWindow(
                         )
                     }
                 }
-
-                // Subtle divider line at the bottom of the topbar
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            if (themeColors.isGlass) Color.White.copy(alpha = 0.35f)
-                            else Color.LightGray.copy(alpha = 0.5f)
-                        )
-                )
             }
 
             // Window Content
@@ -3439,9 +3437,18 @@ fun AppWindow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .then(
+                        if (windowState.isFullScreen) {
+                            Modifier
+                        } else {
+                            Modifier
+                                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                                .border(1.dp, Color.White.copy(alpha = 0.35f), RoundedCornerShape(4.dp))
+                        }
+                    )
                     .clip(
                         if (windowState.isFullScreen) RectangleShape
-                        else RoundedCornerShape(bottomStart = animatedShape, bottomEnd = animatedShape)
+                        else RoundedCornerShape(4.dp)
                     )
                     .background(
                         if (themeColors.isMetro) themeColors.background
@@ -3578,20 +3585,17 @@ fun RecentAppsMenu(
         tonalElevation = 16.dp
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (wallpaperRes != null) {
-                Image(
-                    painter = painterResource(wallpaperRes),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .matchParentSize()
-                        .blur(13.dp)
-                )
-            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.65f))
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color(0x77CCCCCC), // transparent gray on top (more visible)
+                                Color(0xBB00A2E8)  // blue at the bottom (more visible)
+                            )
+                        )
+                    )
             )
             // Top specular gloss line
             Box(
@@ -3695,6 +3699,13 @@ fun WebViewAppView(url: String, externalKeyboardEvent: NativeKeyEvent? = null) {
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.databaseEnabled = true
+                        settings.setSupportMultipleWindows(true)
+                        settings.javaScriptCanOpenWindowsAutomatically = true
+                        settings.allowFileAccess = true
+                        settings.allowContentAccess = true
+                        settings.mediaPlaybackRequiresUserGesture = false
+                        settings.loadWithOverviewMode = true
+                        settings.useWideViewPort = true
                         webView = this
                         loadUrl(url)
                     }
@@ -3719,7 +3730,9 @@ data class WebApp(
     val url: String,
     val iconEmoji: String,
     val description: String,
-    val iconRes: Int? = null
+    val iconRes: Any? = null,
+    val category: String = "Utility",
+    val isNative: Boolean = false
 )
 
 @Composable
@@ -3731,27 +3744,38 @@ fun AppStoreView(
 ) {
     val appStoreApps = remember {
         listOf(
-            WebApp("yt_web", "YouTube", "https://yt.be/", "📺", "Watch popular videos, music, and streams.", R.drawable.img_youtube_aero),
-            WebApp("pocket_web", "Uniblox Pocket", "https://uniblox-fun.lovable.app/pocket", "🧱", "Classic sandbox block-building game in pocket edition.", R.drawable.img_uniblox_pocket),
-            WebApp("vscode_web", "VS Code", "https://vscode.dev/", "💻", "Code on the go in a full-featured online development environment."),
-            WebApp("minecraft_web", "Minecraft", "https://enchanting-dasik-c072d6.netlify.app/", "⛏️", "Minecraft browser edition with block placing and world building.", R.drawable.img_minecraft_aero),
-            WebApp("bing_web", "Bing", "https://bing.com/", "🔍", "Search with Bing's smart AI features."),
-            WebApp("scratch_web", "Scratch", "https://scratch.mit.edu", "🐈", "Create interactive games, animations, and stories."),
-            WebApp("bloxd_web", "Bloxd", "https://bloxd.io/", "🧱", "Bloxd.io multiplayer block builder and mini-games."),
-            WebApp("cuberealm_web", "Cube Realm", "https://cuberealm.io/", "🌍", "Explore and build inside a vast cubic online sandbox."),
-            WebApp("audilos_web", "Uniblox Audilos", "https://uniblox-audilos.ai.studio/", "🎵", "Explore audio visualization and soundscapes on AI Studio."),
-            WebApp("drive_web", "Google Drive", "https://drive.google.com/", "📁", "Access and share your Google Drive files in cloud storage."),
-            WebApp("spotify_web", "Spotify", "https://spotify.com/", "🎵", "Listen to millions of songs, playlists, and podcasts."),
-            WebApp("github_web", "GitHub", "https://GitHub.com/", "🐙", "Manage, review, and commit code with GitHub on Uniblox OS."),
-            WebApp("gemini_web", "Gemini", "https://gemini.google.com/", "✨", "Supercharge your productivity with Google's advanced Gemini AI model.", R.drawable.img_gemini_aero),
-            WebApp("poxel_web", "Poxel", "https://poxel.io/", "🖼️", "Poxel.io interactive drawing, painting, and art space."),
-            WebApp("slither_web", "Slither.io", "http://slither.com/io", "🐍", "Grow as big as you can in the classic multiplayer snake battle arena."),
-            WebApp("flappy_web", "Flappy Bird", "https://flappybird.io/", "🐦", "Tempt your patience with the addictive Flappy Bird arcade game."),
-            WebApp("2048_web", "2048", "https://play2048.co/", "🔢", "Merge the numbered tiles to reach the 2048 block."),
-            WebApp("crazygames_web", "CrazyGames", "https://crazygames.com/", "🎮", "Instantly play thousands of high-quality online games."),
-            WebApp("lovable_web", "Lovable", "https://lovable.dev/", "❤️", "Design, build, and deploy apps in natural language."),
-            WebApp("turbowarp_web", "TurboWarp Embed", "https://turbowarp.org/1109852074/embed", "🚀", "Run Scratch games up to 20x faster with enhanced embeds."),
-            WebApp("speedtest_web", "Speedtest", "https://speedtest.com/", "⚡", "Instantly check your network download and upload speeds.")
+            // Games
+            WebApp("pocket_web", "Uniblox Pocket", "https://uniblox-fun.lovable.app/pocket", "🧱", "Classic sandbox block-building game in pocket edition.", "https://img.icons8.com/color/512/minecraft-creeper.png", "Games"),
+            WebApp("minecraft_web", "Minecraft", "https://enchanting-dasik-c072d6.netlify.app/", "⛏️", "Minecraft browser edition with block placing and world building.", "https://img.icons8.com/color/512/minecraft-dirt-block.png", "Games"),
+            WebApp("bloxd_web", "Bloxd", "https://bloxd.io/", "🧱", "Bloxd.io multiplayer block builder and mini-games.", "https://img.icons8.com/fluency/512/cube.png", "Games"),
+            WebApp("cuberealm_web", "Cube Realm", "https://cuberealm.io/", "🌍", "Explore and build inside a vast cubic online sandbox.", "https://img.icons8.com/color/512/earth-element.png", "Games"),
+            WebApp("slither_web", "Slither.io", "http://slither.com/io", "🐍", "Grow as big as you can in the classic multiplayer snake battle arena.", "https://img.icons8.com/color/512/snake.png", "Games"),
+            WebApp("flappy_web", "Flappy Bird", "https://flappybird.io/", "🐦", "Tempt your patience with the addictive Flappy Bird arcade game.", "https://img.icons8.com/color/512/flappy-bird.png", "Games"),
+            WebApp("2048_web", "2048", "https://play2048.co/", "🔢", "Merge the numbered tiles to reach the 2048 block.", "https://img.icons8.com/color/512/2048.png", "Games"),
+            WebApp("crazygames_web", "CrazyGames", "https://crazygames.com/", "🎮", "Instantly play thousands of high-quality online games.", "https://img.icons8.com/color/512/game-controller.png", "Games"),
+            
+            // Utility
+            WebApp("yt_web", "YouTube", "https://yt.be/", "📺", "Watch popular videos, music, and streams.", "https://img.icons8.com/color/512/youtube-play.png", "Utility"),
+            WebApp("vscode_web", "VS Code", "https://vscode.dev/", "💻", "Code on the go in a full-featured online development environment.", "https://img.icons8.com/color/512/visual-studio-code-2019.png", "Utility"),
+            WebApp("bing_web", "Bing", "https://bing.com/", "🔍", "Search with Bing's smart AI features.", "https://img.icons8.com/color/512/bing.png", "Utility"),
+            WebApp("scratch_web", "Scratch", "https://scratch.mit.edu", "🐈", "Create interactive games, animations, and stories.", "https://img.icons8.com/color/512/scratch.png", "Utility"),
+            WebApp("audilos_web", "Uniblox Audilos", "https://uniblox-audilos.ai.studio/", "🎵", "Explore audio visualization and soundscapes on AI Studio.", "https://img.icons8.com/color/512/music-soundwave.png", "Utility"),
+            WebApp("drive_web", "Google Drive", "https://drive.google.com/", "📁", "Access and share your Google Drive files in cloud storage.", "https://img.icons8.com/color/512/google-drive--v3.png", "Utility"),
+            WebApp("spotify_web", "Spotify", "https://spotify.com/", "🎵", "Listen to millions of songs, playlists, and podcasts.", "https://img.icons8.com/color/512/spotify--v1.png", "Utility"),
+            WebApp("github_web", "GitHub", "https://GitHub.com/", "🐙", "Manage, review, and commit code with GitHub on Uniblox OS.", "https://img.icons8.com/fluency/512/github.png", "Utility"),
+            WebApp("gemini_web", "Gemini", "https://gemini.google.com/", "✨", "Supercharge your productivity with Google's advanced Gemini AI model.", "https://img.icons8.com/color/512/google-gemini.png", "Utility"),
+            WebApp("poxel_web", "Poxel", "https://poxel.io/", "🖼️", "Poxel.io interactive drawing, painting, and art space.", "https://img.icons8.com/color/512/paint-palette.png", "Utility"),
+            WebApp("lovable_web", "Lovable", "https://lovable.dev/", "❤️", "Design, build, and deploy apps in natural language.", "https://img.icons8.com/color/512/heart-suit.png", "Utility"),
+            WebApp("turbowarp_web", "TurboWarp Embed", "https://turbowarp.org/1109852074/embed", "🚀", "Run Scratch games up to 20x faster with enhanced embeds.", "https://img.icons8.com/color/512/space-ship.png", "Utility"),
+            WebApp("speedtest_web", "Speedtest", "https://speedtest.com/", "⚡", "Instantly check your network download and upload speeds.", "https://img.icons8.com/color/512/speedometer.png", "Utility"),
+            
+            // Native Android Apps
+            WebApp("native_chrome", "Chrome", "com.android.chrome", "🌐", "Fast, secure, and free web browser for Android.", "https://img.icons8.com/color/512/google-chrome.png", "Native", true),
+            WebApp("native_playstore", "Play Store", "com.android.vending", "🏪", "The official app store for Android devices.", "https://img.icons8.com/color/512/google-play.png", "Native", true),
+            WebApp("native_fb", "Facebook", "com.facebook.katana", "👥", "Connect with friends, family and other people you know.", "https://img.icons8.com/color/512/facebook-new.png", "Native", true),
+            WebApp("native_ig", "Instagram", "com.instagram.android", "📸", "A simple way to capture and share the world's moments.", "https://img.icons8.com/color/512/instagram-new.png", "Native", true),
+            WebApp("native_wa", "WhatsApp", "com.whatsapp", "💬", "Simple. Personal. Real-time messaging.", "https://img.icons8.com/color/512/whatsapp.png", "Native", true),
+            WebApp("native_tk", "TikTok", "com.zhiliaoapp.musically", "🎥", "Short-form mobile videos for everyone.", "https://img.icons8.com/color/512/tiktok.png", "Native", true)
         )
     }
 
@@ -3761,156 +3785,288 @@ fun AppStoreView(
         else appStoreApps.filter { it.name.contains(searchQuery, ignoreCase = true) || it.description.contains(searchQuery, ignoreCase = true) }
     }
 
+    val gamesApps = remember { appStoreApps.filter { it.category == "Games" } }
+    val utilityApps = remember { appStoreApps.filter { it.category == "Utility" } }
+    val nativeApps = remember { appStoreApps.filter { it.category == "Native" } }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF3F2F8))
-            .padding(16.dp)
     ) {
-        // App Store Banner
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(110.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Brush.horizontalGradient(listOf(Color(0xFF2196F3), Color(0xFF9C27B0))))
-                .padding(16.dp),
-            contentAlignment = Alignment.CenterStart
+        // Sticky Search Bar
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = Color.White,
+            shadowElevation = 2.dp
         ) {
-            Column {
-                Text(
-                    text = "Uniblox App Store",
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Discover & install instant web-powered applications",
-                    color = Color.White.copy(alpha = 0.85f),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Search apps, games, and more...") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFFF1F3F4),
+                    unfocusedContainerColor = Color(0xFFF1F3F4),
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent
+                ),
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Gray) }
+            )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Search Bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            placeholder = { Text("Search apps...") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedBorderColor = Color(0xFF2196F3)
-            ),
-            singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") }
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Grid of Apps
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 160.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.weight(1f)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            items(filteredApps) { app ->
-                val isInstalled = installedAppIds.contains(app.id)
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            // Hero Banner
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(Color(0xFF6200EE), Color(0xFF03DAC6))
+                        )
+                    )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Text(
+                        text = "Next Gen Gaming",
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    Text(
+                        text = "Play your favorite games instantly with zero installation.",
+                        color = Color.White.copy(alpha = 0.8f),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { onOpenApp("https://crazygames.com/", "CrazyGames") },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
                     ) {
-                        // Emoji Icon
-                        Box(
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFE3F2FD)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (app.iconRes != null) {
-                                AsyncImage(
-                                    model = app.iconRes,
-                                    contentDescription = app.name,
-                                    modifier = Modifier.fillMaxSize()
+                        Text("Get Started", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            if (searchQuery.isEmpty()) {
+                // Section: Games
+                AppStoreSection(
+                    title = "Gaming Section",
+                    apps = gamesApps,
+                    installedAppIds = installedAppIds,
+                    onInstallApp = onInstallApp,
+                    onUninstallApp = onUninstallApp,
+                    onOpenApp = onOpenApp
+                )
+
+                // Section: Android Native Apps
+                AppStoreSection(
+                    title = "Native Android Apps",
+                    apps = nativeApps,
+                    installedAppIds = installedAppIds,
+                    onInstallApp = onInstallApp,
+                    onUninstallApp = onUninstallApp,
+                    onOpenApp = onOpenApp
+                )
+
+                // Section: Utilities
+                AppStoreSection(
+                    title = "Essential Utilities",
+                    apps = utilityApps,
+                    installedAppIds = installedAppIds,
+                    onInstallApp = onInstallApp,
+                    onUninstallApp = onUninstallApp,
+                    onOpenApp = onOpenApp
+                )
+                
+                Spacer(modifier = Modifier.height(32.dp))
+            } else {
+                // Search Results Grid
+                Text(
+                    text = "Search Results",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+                    filteredApps.chunked(2).forEach { rowApps ->
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            rowApps.forEach { app ->
+                                AppStoreCard(
+                                    modifier = Modifier.weight(1f).padding(bottom = 8.dp),
+                                    app = app,
+                                    isInstalled = installedAppIds.contains(app.id),
+                                    onInstall = { onInstallApp(app.id) },
+                                    onUninstall = { onUninstallApp(app.id) },
+                                    onOpen = { onOpenApp(app.url, app.name) }
                                 )
-                            } else {
-                                Text(text = app.iconEmoji, fontSize = 28.sp)
                             }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = app.name,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Text(
-                            text = app.description,
-                            color = Color.Gray,
-                            fontSize = 11.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.height(34.dp),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        if (isInstalled) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Button(
-                                    onClick = { onOpenApp(app.url, app.name) },
-                                    modifier = Modifier.weight(1f),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                                    shape = RoundedCornerShape(8.dp),
-                                    contentPadding = PaddingValues(0.dp)
-                                ) {
-                                    Text("Open", fontSize = 11.sp, color = Color.White)
-                                }
-
-                                Button(
-                                    onClick = { onUninstallApp(app.id) },
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
-                                    shape = RoundedCornerShape(8.dp),
-                                    contentPadding = PaddingValues(0.dp)
-                                ) {
-                                    Text("Remove", fontSize = 11.sp, color = Color.White)
-                                }
-                            }
-                        } else {
-                            Button(
-                                onClick = { onInstallApp(app.id) },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
-                                shape = RoundedCornerShape(8.dp),
-                                contentPadding = PaddingValues(0.dp)
-                            ) {
-                                Text("Install", fontSize = 11.sp, color = Color.White)
+                            if (rowApps.size == 1) {
+                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AppStoreSection(
+    title: String,
+    apps: List<WebApp>,
+    installedAppIds: List<String>,
+    onInstallApp: (String) -> Unit,
+    onUninstallApp: (String) -> Unit,
+    onOpenApp: (String, String) -> Unit
+) {
+    Column(modifier = Modifier.padding(vertical = 12.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "View all",
+                color = Color(0xFF2196F3),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.clickable { }
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            apps.forEach { app ->
+                AppStoreCard(
+                    modifier = Modifier.width(160.dp),
+                    app = app,
+                    isInstalled = installedAppIds.contains(app.id),
+                    onInstall = { onInstallApp(app.id) },
+                    onUninstall = { onUninstallApp(app.id) },
+                    onOpen = { onOpenApp(app.url, app.name) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AppStoreCard(
+    modifier: Modifier = Modifier,
+    app: WebApp,
+    isInstalled: Boolean,
+    onInstall: () -> Unit,
+    onUninstall: () -> Unit,
+    onOpen: () -> Unit
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // App Icon
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFFF8F9FA))
+                    .border(1.dp, Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
+                    .padding(6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (app.iconRes != null) {
+                    AsyncImage(
+                        model = app.iconRes,
+                        contentDescription = app.name,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Text(text = app.iconEmoji, fontSize = 28.sp)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = app.name,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = if (app.isNative) "Native App" else "Web App",
+                color = Color.Gray,
+                fontSize = 9.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (isInstalled) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Button(
+                        onClick = onOpen,
+                        modifier = Modifier.weight(1f).height(30.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                        shape = RoundedCornerShape(6.dp)
+                    ) {
+                        Text("Open", fontSize = 10.sp, color = Color.White)
+                    }
+                    IconButton(
+                        onClick = onUninstall,
+                        modifier = Modifier.size(30.dp).background(Color(0xFFF44336).copy(alpha = 0.1f), RoundedCornerShape(6.dp))
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = "Uninstall", tint = Color(0xFFF44336), modifier = Modifier.size(14.dp))
+                    }
+                }
+            } else {
+                Button(
+                    onClick = onInstall,
+                    modifier = Modifier.fillMaxWidth().height(30.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
+                    shape = RoundedCornerShape(6.dp)
+                ) {
+                    Text("Get", fontSize = 11.sp, color = Color.White)
                 }
             }
         }
@@ -3968,6 +4124,13 @@ fun BrowserView(externalKeyboardEvent: NativeKeyEvent? = null) {
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.databaseEnabled = true
+                        settings.setSupportMultipleWindows(true)
+                        settings.javaScriptCanOpenWindowsAutomatically = true
+                        settings.allowFileAccess = true
+                        settings.allowContentAccess = true
+                        settings.mediaPlaybackRequiresUserGesture = false
+                        settings.loadWithOverviewMode = true
+                        settings.useWideViewPort = true
                         webView = this
                         loadUrl(url)
                     }
@@ -4026,6 +4189,14 @@ fun GameEngineView() {
             WebView(context).apply {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
+                settings.databaseEnabled = true
+                settings.setSupportMultipleWindows(true)
+                settings.javaScriptCanOpenWindowsAutomatically = true
+                settings.allowFileAccess = true
+                settings.allowContentAccess = true
+                settings.mediaPlaybackRequiresUserGesture = false
+                settings.loadWithOverviewMode = true
+                settings.useWideViewPort = true
                 webViewClient = WebViewClient()
                 loadUrl("https://uniblox-fun.lovable.app/pocket")
             }
