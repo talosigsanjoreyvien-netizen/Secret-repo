@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.os.BatteryManager
 import android.graphics.Rect
 import android.graphics.RenderEffect
@@ -23,8 +24,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent as NativeKeyEvent
 import android.view.KeyCharacterMap
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -62,6 +62,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
@@ -99,6 +100,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import android.widget.Toast
 import coil.compose.AsyncImage
+import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import com.example.ui.theme.MyApplicationTheme
@@ -278,7 +282,8 @@ enum class App {
     Keyboard,
     SystemApp,
     AppStore,
-    WebViewApp
+    WebViewApp,
+    StylusNotes
 }
 
 data class WindowState(
@@ -307,6 +312,7 @@ fun UnibloxOSApp(appWidgetHost: AppWidgetHost, appWidgetManager: AppWidgetManage
     val pinnedApps = remember { mutableStateListOf<TaskbarAppItem>() }
     var showStartMenu by remember { mutableStateOf(false) }
     var showRecentApps by remember { mutableStateOf(false) }
+    var showControlCenter by remember { mutableStateOf(false) }
     var defaultLaunchFullscreen by remember { mutableStateOf(false) }
     var showTaskbarBackground by remember { mutableStateOf(false) }
     var focusedWindowId by remember { mutableStateOf<String?>(null) }
@@ -524,6 +530,7 @@ fun UnibloxOSApp(appWidgetHost: AppWidgetHost, appWidgetManager: AppWidgetManage
             }
         }
         showStartMenu = false
+        showControlCenter = false
     }
 
     val onToggleWindowFullscreen: (String) -> Unit = { id ->
@@ -613,6 +620,14 @@ fun UnibloxOSApp(appWidgetHost: AppWidgetHost, appWidgetManager: AppWidgetManage
                     showRecentApps = !showRecentApps
                     if (showRecentApps) showStartMenu = false
                 },
+                showControlCenter = showControlCenter,
+                onToggleControlCenter = {
+                    showControlCenter = !showControlCenter
+                    if (showControlCenter) {
+                        showStartMenu = false
+                        showRecentApps = false
+                    }
+                },
                 appWidgetHost = appWidgetHost,
                 appWidgetManager = appWidgetManager,
                 widgets = widgets,
@@ -646,8 +661,10 @@ fun UnibloxOSApp(appWidgetHost: AppWidgetHost, appWidgetManager: AppWidgetManage
         }
     }
 
-    BackHandler(enabled = windowStack.isNotEmpty() || showStartMenu || showRecentApps) {
-        if (showStartMenu) {
+    BackHandler(enabled = windowStack.isNotEmpty() || showStartMenu || showRecentApps || showControlCenter) {
+        if (showControlCenter) {
+            showControlCenter = false
+        } else if (showStartMenu) {
             showStartMenu = false
         } else if (showRecentApps) {
             showRecentApps = false
@@ -841,6 +858,8 @@ fun DesktopScreen(
     onToggleStartMenu: () -> Unit,
     showRecentApps: Boolean,
     onToggleRecentApps: () -> Unit,
+    showControlCenter: Boolean = false,
+    onToggleControlCenter: () -> Unit = {},
     appWidgetHost: AppWidgetHost,
     appWidgetManager: AppWidgetManager,
     widgets: MutableList<WidgetItem>,
@@ -892,7 +911,7 @@ fun DesktopScreen(
     val appStoreApps = remember {
         listOf(
             WebApp("yt_web", "YouTube", "https://yt.be/", "📺", "Watch popular videos, music, and streams.", "https://img.icons8.com/color/512/youtube-play.png"),
-            WebApp("pocket_web", "Uniblox Pocket", "https://uniblox-fun.lovable.app/pocket", "🧱", "Classic sandbox block-building game in pocket edition.", "https://img.icons8.com/color/512/minecraft-creeper.png"),
+            WebApp("pocket_web", "Uniblox Pocket Engine", "https://uniblox-fun.lovable.app/pocket", "🎮", "Next-generation 3D gaming engine and interactive virtual world playground.", R.drawable.img_uniblox_pocket),
             WebApp("vscode_web", "VS Code", "https://vscode.dev/", "💻", "Code on the go in a full-featured online development environment.", "https://img.icons8.com/color/512/visual-studio-code-2019.png"),
             WebApp("minecraft_web", "Minecraft", "https://enchanting-dasik-c072d6.netlify.app/", "⛏️", "Minecraft browser edition with block placing and world building.", "https://img.icons8.com/color/512/minecraft-dirt-block.png"),
             WebApp("bing_web", "Bing", "https://bing.com/", "🔍", "Search with Bing's smart AI features.", "https://img.icons8.com/color/512/bing.png"),
@@ -901,6 +920,7 @@ fun DesktopScreen(
             WebApp("cuberealm_web", "Cube Realm", "https://cuberealm.io/", "🌍", "Explore and build inside a vast cubic online sandbox.", "https://img.icons8.com/color/512/earth-element.png"),
             WebApp("audilos_web", "Uniblox Audilos", "https://uniblox-audilos.ai.studio/", "🎵", "Explore audio visualization and soundscapes on AI Studio.", "https://img.icons8.com/color/512/music-soundwave.png"),
             WebApp("drive_web", "Google Drive", "https://drive.google.com/", "📁", "Access and share your Google Drive files in cloud storage.", "https://img.icons8.com/color/512/google-drive--v3.png"),
+            WebApp("native_photos", "Google Photos", "com.google.android.apps.photos", "🖼️", "Access, edit, and backup your Google Photos cloud library.", "https://img.icons8.com/color/512/google-photos.png", "Utility", true),
             WebApp("spotify_web", "Spotify", "https://spotify.com/", "🎵", "Listen to millions of songs, playlists, and podcasts.", "https://img.icons8.com/color/512/spotify--v1.png"),
             WebApp("github_web", "GitHub", "https://GitHub.com/", "🐙", "Manage, review, and commit code with GitHub on Uniblox OS.", "https://img.icons8.com/fluency/512/github.png"),
             WebApp("gemini_web", "Gemini", "https://gemini.google.com/", "✨", "Supercharge your productivity with Google's advanced Gemini AI model.", "https://img.icons8.com/color/512/google-gemini.png"),
@@ -940,6 +960,8 @@ fun DesktopScreen(
         list.add(DesktopAppItem("app_store_sys", App.AppStore, "", "App Store", R.drawable.img_app_store_aero, Color(0xFF4CAF50)))
         // 2. Add System Terminal
         list.add(DesktopAppItem("terminal_sys", App.Terminal, "", "Terminal", Icons.Default.Terminal, Color(0xFF2D2D2D)))
+        // 3. Add Stylus Notes
+        list.add(DesktopAppItem("stylus_notes_sys", App.StylusNotes, "", "Stylus Notes", Icons.Default.Brush, Color(0xFFE91E63)))
         
         // 3. Add Installed Web Apps
         appStoreApps.forEach { webApp ->
@@ -1093,6 +1115,22 @@ fun DesktopScreen(
                         contextMenuItem = null
                     }
                 )
+            }
+            .pointerInput(Unit) {
+                var lastStylusTapTime = 0L
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull()
+                        if (change != null && change.pressed && change.type == PointerType.Stylus) {
+                            val currentTime = System.currentTimeMillis()
+                            if (currentTime - lastStylusTapTime < 300) {
+                                onAppOpenWithMode(App.StylusNotes, null, "Stylus Notes", null, false)
+                            }
+                            lastStylusTapTime = currentTime
+                        }
+                    }
+                }
             }
     ) {
         // Display high-resolution desktop wallpaper
@@ -1462,9 +1500,12 @@ fun DesktopScreen(
             enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
             exit = slideOutVertically(targetOffsetY = { it / 2 }) + fadeOut(),
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomStart)
                 .windowInsetsPadding(WindowInsets.navigationBars)
-                .padding(bottom = if (isAnyAppFullscreen) 56.dp else 76.dp)
+                .padding(
+                    start = if (isAnyAppFullscreen) 8.dp else 22.dp,
+                    bottom = if (isAnyAppFullscreen) 56.dp else 76.dp
+                )
                 .zIndex(1500f)
         ) {
             StartMenu(
@@ -1495,6 +1536,48 @@ fun DesktopScreen(
                 installedAppIds = installedAppIds,
                 appStoreApps = appStoreApps,
                 wallpaperRes = wallpaperRes
+            )
+        }
+
+        // Outside tap dismisser for Control Center
+        if (showControlCenter) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(1400f)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        onToggleControlCenter()
+                    }
+            )
+        }
+
+        // Control Center Panel
+        AnimatedVisibility(
+            visible = showControlCenter,
+            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { it / 2 }) + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(
+                    end = if (isAnyAppFullscreen) 8.dp else 22.dp,
+                    bottom = if (isAnyAppFullscreen) 56.dp else 76.dp
+                )
+                .zIndex(1500f)
+        ) {
+            ControlCenterPanel(
+                context = context,
+                currentTheme = currentTheme,
+                onThemeChange = onThemeChange,
+                onClose = onToggleControlCenter,
+                showTaskbarBackground = showTaskbarBackground,
+                onToggleTaskbarBackground = onToggleTaskbarBackground,
+                onAppOpen = { app, pkg, label, icon ->
+                    onAppOpenWithMode(app, pkg, label, icon, defaultLaunchFullscreen)
+                }
             )
         }
 
@@ -1555,6 +1638,7 @@ fun DesktopScreen(
                 runningSystemApps = runningSystemApps,
                 onToggleStartMenu = onToggleStartMenu,
                 onToggleRecentApps = onToggleRecentApps,
+                onToggleControlCenter = onToggleControlCenter,
                 onAppOpen = onAppOpen,
                 onPinApp = onPinApp,
                 onUnpinApp = onUnpinApp,
@@ -1805,6 +1889,7 @@ fun Taskbar(
     runningSystemApps: List<AppEntry>,
     onToggleStartMenu: () -> Unit,
     onToggleRecentApps: () -> Unit,
+    onToggleControlCenter: () -> Unit = {},
     onAppOpen: (App, String?, String?, Drawable?) -> Unit,
     onPinApp: (TaskbarAppItem) -> Unit,
     onUnpinApp: (String) -> Unit,
@@ -1869,120 +1954,188 @@ fun Taskbar(
 
     Box(
         modifier = modifier
-            .height(64.dp)
-            .fillMaxWidth(if (showBackground) 1f else 0.9f)
-            .clip(if (showBackground) RectangleShape else RoundedCornerShape(32.dp))
+            .height(56.dp)
+            .fillMaxWidth()
     ) {
-
-            Row(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 12.dp)
-                    .fillMaxHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
-            ) {
-                // Start Button (4 dots)
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(if (themeColors.isMetro) RoundedCornerShape(0.dp) else CircleShape)
-                        .background(if (themeColors.isMetro) themeColors.primary else Color.Transparent)
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onTap = { onToggleStartMenu() },
-                                onLongPress = { onRunClick() }
-                            )
-                        }
-                        .padding(4.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                            Box(modifier = Modifier.size(7.dp).background(Color.White, CircleShape))
-                            Box(modifier = Modifier.size(7.dp).background(Color.White, CircleShape))
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                            Box(modifier = Modifier.size(7.dp).background(Color.White, CircleShape))
-                            Box(modifier = Modifier.size(7.dp).background(Color.White, CircleShape))
-                        }
-                    }
-                }
-
-                // Search Bar
-                Surface(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(120.dp)
-                        .clickable { onToggleStartMenu() },
-                    shape = if (themeColors.isMetro) RoundedCornerShape(0.dp) else RoundedCornerShape(20.dp),
-                    color = if (themeColors.isMetro) Color.White.copy(alpha = 0.2f) else Color.White.copy(alpha = 0.5f),
-                    border = if (themeColors.isMetro) BorderStroke(1.dp, Color.White.copy(alpha = 0.3f)) else null
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = if (themeColors.isMetro) Color.White else Color(0xFF333333), modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Search", color = if (themeColors.isMetro) Color.White.copy(alpha = 0.8f) else Color(0xFF333333).copy(alpha = 0.7f), fontSize = 14.sp)
-                    }
-                }
-
-                // Vertical Divider
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(28.dp)
-                        .background(Color(0xFF333333).copy(alpha = 0.25f))
+        // ==================== LEFT SEGMENT (Start + Search) ====================
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 12.dp)
+                .height(48.dp)
+                .shadow(8.dp, RoundedCornerShape(24.dp))
+                .clip(RoundedCornerShape(24.dp))
+                .background(if (showBackground) themeColors.background else Color.Black.copy(alpha = 0.85f))
+                .border(
+                    width = 1.dp,
+                    color = Color.White.copy(alpha = 0.25f),
+                    shape = RoundedCornerShape(24.dp)
                 )
+                .padding(horizontal = 10.dp)
+        ) {
+            // Start Button
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.12f))
+                    .clickable { onToggleStartMenu() }
+                    .padding(6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Box(modifier = Modifier.size(5.dp).background(Color.White, CircleShape))
+                        Box(modifier = Modifier.size(5.dp).background(Color.White, CircleShape))
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Box(modifier = Modifier.size(5.dp).background(Color.White, CircleShape))
+                        Box(modifier = Modifier.size(5.dp).background(Color.White, CircleShape))
+                    }
+                }
+            }
 
-                // Taskbar Apps (pinned and running) - Scrollable Row
+            // Compact Search Bar
+            Surface(
+                modifier = Modifier
+                    .height(32.dp)
+                    .width(100.dp)
+                    .clickable { onToggleStartMenu() },
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White.copy(alpha = 0.1f),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
+            ) {
                 Row(
-                    modifier = Modifier
-                        .weight(1f, fill = false)
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val displayCount = 10
-                    val displayApps = allTaskbarApps.take(displayCount)
-                    
-                    if (displayApps.isEmpty() && pinnedApps.isNotEmpty()) {
-                        // Fallback if allTaskbarApps logic failed
-                        pinnedApps.take(10).forEach { appItem ->
-                             TaskbarIconItem(
-                                item = appItem,
-                                isRunning = false,
-                                onClick = { onAppOpen(appItem.app, appItem.packageName, appItem.label, appItem.icon as? Drawable) },
-                                onLongClick = { taskbarMenuApp = appItem },
-                                currentTheme = currentTheme
-                            )
-                        }
-                    } else {
-                        displayApps.forEach { appItem ->
-                            val isRunning = windowStack.any {
-                                (it.app != App.SystemApp && it.app == appItem.app) ||
-                                (it.app == App.SystemApp && it.packageName.isNotEmpty() && it.packageName == appItem.packageName)
-                            } || runningSystemApps.any { it.packageName == appItem.packageName }
+                    Icon(Icons.Default.Search, null, tint = Color.White, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Search", color = Color.White.copy(alpha = 0.6f), fontSize = 10.sp)
+                }
+            }
+        }
 
-                            TaskbarIconItem(
-                                item = appItem,
-                                isRunning = isRunning,
-                                onClick = {
-                                    onAppOpen(appItem.app, appItem.packageName, appItem.label, appItem.icon as? Drawable)
-                                },
-                                onLongClick = {
-                                    taskbarMenuApp = appItem
-                                },
-                                currentTheme = currentTheme
-                            )
-                        }
+        // ==================== MIDDLE SEGMENT (Content-hugging Floating Dock) ====================
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .height(48.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                modifier = Modifier
+                    .shadow(8.dp, RoundedCornerShape(24.dp))
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(if (showBackground) themeColors.background else Color.Black.copy(alpha = 0.85f))
+                    .border(
+                        width = 1.dp,
+                        color = Color.White.copy(alpha = 0.25f),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .padding(horizontal = 10.dp, vertical = 2.dp)
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val displayCount = 10
+                val displayApps = allTaskbarApps.take(displayCount)
+                
+                if (displayApps.isEmpty() && pinnedApps.isNotEmpty()) {
+                    pinnedApps.take(10).forEach { appItem ->
+                        TaskbarIconItem(
+                            item = appItem,
+                            isRunning = false,
+                            onClick = { onAppOpen(appItem.app, appItem.packageName, appItem.label, appItem.icon as? Drawable) },
+                            onLongClick = { taskbarMenuApp = appItem },
+                            currentTheme = currentTheme
+                        )
+                    }
+                } else {
+                    displayApps.forEach { appItem ->
+                        val isRunning = windowStack.any {
+                            (it.app != App.SystemApp && it.app == appItem.app) ||
+                            (it.app == App.SystemApp && it.packageName.isNotEmpty() && it.packageName == appItem.packageName)
+                        } || runningSystemApps.any { it.packageName == appItem.packageName }
+
+                        TaskbarIconItem(
+                            item = appItem,
+                            isRunning = isRunning,
+                            onClick = {
+                                onAppOpen(appItem.app, appItem.packageName, appItem.label, appItem.icon as? Drawable)
+                            },
+                            onLongClick = {
+                                taskbarMenuApp = appItem
+                            },
+                            currentTheme = currentTheme
+                        )
                     }
                 }
             }
         }
+
+        // ==================== RIGHT SEGMENT (Control Center & Clock) ====================
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 12.dp)
+                .height(48.dp)
+                .shadow(8.dp, RoundedCornerShape(24.dp))
+                .clip(RoundedCornerShape(24.dp))
+                .clickable { onToggleControlCenter() }
+                .background(if (showBackground) themeColors.background else Color.Black.copy(alpha = 0.85f))
+                .border(
+                    width = 1.dp,
+                    color = Color.White.copy(alpha = 0.25f),
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 4.dp)
+        ) {
+            Icon(Icons.Default.Wifi, contentDescription = "WiFi", tint = Color.White, modifier = Modifier.size(14.dp))
+            Icon(Icons.Default.SignalCellularAlt, contentDescription = "Signal", tint = Color.White, modifier = Modifier.size(14.dp))
+            
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(16.dp)
+                    .background(Color.White.copy(alpha = 0.3f))
+            )
+
+            var timeString by remember { mutableStateOf("12:30 PM") }
+            LaunchedEffect(Unit) {
+                while (true) {
+                    val sdf = java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault())
+                    timeString = sdf.format(java.util.Date())
+                    kotlinx.coroutines.delay(1000)
+                }
+            }
+            Text(
+                text = timeString,
+                color = Color.White,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(22.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF0072FF)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "User Avatar",
+                    tint = Color.White,
+                    modifier = Modifier.size(12.dp)
+                )
+            }
+        }
+    }
 
         // Context menu dialog for taskbar items (Pin/Unpin, Close)
         taskbarMenuApp?.let { appItem ->
@@ -2207,40 +2360,8 @@ fun FullscreenTaskbar(
             .height(52.dp)
     ) {
         if (themeColors.isGlass) {
-            // Aero frosted translucent gradient
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                Color(0x77CCCCCC), // transparent gray on top (more visible)
-                                Color(0xBB00A2E8)  // blue at the bottom (more visible)
-                            )
-                        )
-                    )
-            )
-            // Specular gloss reflection line
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.4f),
-                                Color.White.copy(alpha = 0.95f),
-                                Color.White.copy(alpha = 0.4f)
-                            )
-                        )
-                    )
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f))
-            )
+            // Aero frosted translucent gradient - only if theme is glass, but islands should still be islands.
+            // Removing global background to let islands shine.
         }
         // Subtle top divider
         Box(
@@ -2251,18 +2372,26 @@ fun FullscreenTaskbar(
                 .align(Alignment.TopCenter)
         )
 
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 8.dp)
         ) {
-            // LEFT: App Drawer Button + Divider + App Icons
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // LEFT: App Drawer Button + Search Island
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color.Black.copy(alpha = 0.45f))
+                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(22.dp))
+                    .padding(horizontal = 10.dp)
+            ) {
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(32.dp)
                         .pointerInput(Unit) {
                             detectTapGestures(
                                 onTap = { onAppDrawerClick() },
@@ -2274,58 +2403,73 @@ fun FullscreenTaskbar(
                     AppDrawerSearchIcon(currentTheme)
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // Vertical divider
+                // Compact Search Pill
                 Box(
                     modifier = Modifier
-                        .width(1.dp)
-                        .height(24.dp)
-                        .background(Color(0xFFE0E0E0))
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // App icons row
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .height(28.dp)
+                        .width(80.dp)
+                        .background(Color.White.copy(alpha = 0.12f), RoundedCornerShape(14.dp))
+                        .clickable { onAppDrawerClick() }
+                        .padding(horizontal = 8.dp),
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    val displayCount = 10
-                    displayedApps.take(displayCount).forEach { item ->
-                        val isRunning = windowStack.any {
-                            (item.app != App.SystemApp && it.app == item.app) ||
-                            (item.app == App.SystemApp && it.packageName == item.packageName)
-                        }
-                        val isCurrentActive = (item.app == activeApp && (item.app != App.SystemApp || item.packageName == activePackageName))
-
-                        FullscreenTaskbarAppIcon(
-                            item = item,
-                            isActive = isCurrentActive,
-                            isRunning = isRunning,
-                            onClick = {
-                                onAppOpen(item.app, item.packageName, item.label, item.icon as? Drawable)
-                            },
-                            onLongClick = {
-                                taskbarMenuApp = item
-                            },
-                            currentTheme = currentTheme
-                        )
-                    }
+                    Icon(Icons.Default.Search, null, tint = Color.White, modifier = Modifier.size(14.dp))
                 }
             }
 
-            // RIGHT: 3-Button Navigation Bar (Back, Home, Recents)
+            // MIDDLE: App icons row Island
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color.Black.copy(alpha = 0.45f))
+                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(22.dp))
+                    .padding(horizontal = 10.dp)
+            ) {
+                val displayCount = 8
+                displayedApps.take(displayCount).forEach { item ->
+                    val isRunning = windowStack.any {
+                        (item.app != App.SystemApp && it.app == item.app) ||
+                        (item.app == App.SystemApp && it.packageName == item.packageName)
+                    }
+                    val isCurrentActive = (item.app == activeApp && (item.app != App.SystemApp || item.packageName == activePackageName))
+
+                    FullscreenTaskbarAppIcon(
+                        item = item,
+                        isActive = isCurrentActive,
+                        isRunning = isRunning,
+                        onClick = {
+                            onAppOpen(item.app, item.packageName, item.label, item.icon as? Drawable)
+                        },
+                        onLongClick = {
+                            taskbarMenuApp = item
+                        },
+                        currentTheme = currentTheme
+                    )
+                }
+            }
+
+            // RIGHT: 3-Button Navigation Bar Island
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color.Black.copy(alpha = 0.45f))
+                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(22.dp))
+                    .padding(horizontal = 6.dp)
             ) {
                 // Back (Triangle pointing left)
                 IconButton(
                     onClick = onBackClick,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
-                    Canvas(modifier = Modifier.size(15.dp)) {
+                    Canvas(modifier = Modifier.size(12.dp)) {
                         val path = Path().apply {
                             moveTo(size.width, 0f)
                             lineTo(0f, size.height / 2f)
@@ -2339,9 +2483,9 @@ fun FullscreenTaskbar(
                 // Home (Circle)
                 IconButton(
                     onClick = onHomeClick,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
-                    Canvas(modifier = Modifier.size(15.dp)) {
+                    Canvas(modifier = Modifier.size(12.dp)) {
                         drawCircle(color = Color.White, radius = size.minDimension / 2f)
                     }
                 }
@@ -2349,9 +2493,9 @@ fun FullscreenTaskbar(
                 // Recents (Square)
                 IconButton(
                     onClick = onRecentsClick,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
-                    Canvas(modifier = Modifier.size(14.dp)) {
+                    Canvas(modifier = Modifier.size(12.dp)) {
                         drawRoundRect(
                             color = Color.White,
                             size = size,
@@ -2579,8 +2723,7 @@ fun StartMenu(
 
     Surface(
         modifier = Modifier
-            .widthIn(max = 520.dp)
-            .fillMaxWidth(0.94f)
+            .width(400.dp)
             .heightIn(max = 580.dp)
             .fillMaxHeight(0.82f),
         shape = when {
@@ -3471,69 +3614,71 @@ fun AppWindow(
                     )
                     App.Terminal -> TerminalView(currentEvent)
                     App.Keyboard -> KeyboardView(onKeyboardEvent)
+                    App.StylusNotes -> StylusNotesView()
                     App.SystemApp -> {
                         LaunchedEffect(packageName, windowState.isFullScreen) {
-                            if (packageName.isNotEmpty()) {
-                                val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
-                                if (launchIntent != null) {
-                                    try {
-                                        if (!windowState.isFullScreen) {
-                                            val options = ActivityOptions.makeBasic()
-                                            val displayMetrics = context.resources.displayMetrics
-                                            val w = displayMetrics.widthPixels
-                                            val h = displayMetrics.heightPixels
-                                            
-                                            // Set initial bounds for the freeform window
-                                            options.launchBounds = Rect(w / 4, h / 4, w * 3 / 4, h * 3 / 4)
-                                            
-                                            // Add flags to encourage freeform/multitasking behavior
-                                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-                                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+                                if (packageName.isNotEmpty()) {
+                                    val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+                                    if (launchIntent != null) {
+                                        try {
+                                            if (!windowState.isFullScreen) {
+                                                val options = ActivityOptions.makeBasic()
+                                                val displayMetrics = context.resources.displayMetrics
+                                                val w = displayMetrics.widthPixels
+                                                val h = displayMetrics.heightPixels
+                                                
+                                                // Set initial bounds for the freeform window
+                                                options.launchBounds = Rect(w / 4, h / 4, w * 3 / 4, h * 3 / 4)
+                                                
+                                                // Add flags to encourage freeform/multitasking behavior
+                                                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                launchIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                                                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
 
-                                            // Simplified reflection thanks to HiddenApiBypass
-                                            try {
-                                                HiddenApiBypass.invoke(
-                                                    ActivityOptions::class.java,
-                                                    options,
-                                                    "setLaunchWindowingMode",
-                                                    5
-                                                )
-                                            } catch (e: Exception) {
-                                                Log.e("UnibloxOS", "Reflection failed", e)
+                                                // Simplified reflection thanks to HiddenApiBypass
+                                                try {
+                                                    HiddenApiBypass.invoke(
+                                                        ActivityOptions::class.java,
+                                                        options,
+                                                        "setLaunchWindowingMode",
+                                                        5
+                                                    )
+                                                } catch (e: Exception) {
+                                                    Log.e("UnibloxOS", "Reflection failed", e)
+                                                }
+
+                                                context.startActivity(launchIntent, options.toBundle())
+                                            } else {
+                                                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                context.startActivity(launchIntent)
                                             }
-
-                                            context.startActivity(launchIntent, options.toBundle())
-                                        } else {
-                                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            onClose()
+                                        } catch (e: Exception) {
+                                            Log.e("UnibloxOS", "Launch failed", e)
                                             context.startActivity(launchIntent)
+                                            onClose()
                                         }
-                                        onClose()
-                                    } catch (e: Exception) {
-                                        Log.e("UnibloxOS", "Launch failed", e)
-                                        context.startActivity(launchIntent)
-                                        onClose()
                                     }
                                 }
                             }
-                        }
 
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(48.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    strokeWidth = 4.dp
-                                )
-                                Spacer(modifier = Modifier.height(24.dp))
-                                Text("Launching $label", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    if (windowState.isFullScreen) "Opening in Fullscreen Mode..." else "Initializing Freeform Desktop Mode...", 
-                                    style = MaterialTheme.typography.bodyMedium, 
-                                    textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(48.dp),
+                                        color = MaterialTheme.colorScheme.primary,
+                                        strokeWidth = 4.dp
+                                    )
+                                    Spacer(modifier = Modifier.height(24.dp))
+                                    Text("Launching $label", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        if (windowState.isFullScreen) "Opening in Fullscreen Mode..." else "Initializing Freeform Desktop Mode...", 
+                                        style = MaterialTheme.typography.bodyMedium, 
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
@@ -3695,7 +3840,97 @@ fun WebViewAppView(url: String, externalKeyboardEvent: NativeKeyEvent? = null) {
             factory = { context ->
                 try {
                     WebView(context).apply {
-                        webViewClient = WebViewClient()
+                        webViewClient = object : WebViewClient() {
+                            override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+                                val urlStr = request?.url?.toString() ?: return null
+                                if (!urlStr.startsWith("http")) return null
+                                
+                                val headers = request.requestHeaders ?: emptyMap()
+                                val secFetchDest = headers["Sec-Fetch-Dest"] ?: headers["sec-fetch-dest"] ?: ""
+                                val accept = headers["Accept"] ?: headers["accept"] ?: ""
+                                
+                                // Only intercept actual framing documents (HTML inside frames/iframes)
+                                val isIframeDocument = secFetchDest == "iframe" || secFetchDest == "frame" || 
+                                                       (accept.contains("text/html") && !request.isForMainFrame)
+                                                       
+                                if (isIframeDocument && !urlStr.contains("photos.google.com") && !urlStr.contains("accounts.google.com")) {
+                                    try {
+                                        val connection = java.net.URL(urlStr).openConnection() as java.net.HttpURLConnection
+                                        connection.requestMethod = request.method
+                                        
+                                        // Forward all request headers
+                                        headers.forEach { (key, value) ->
+                                            connection.setRequestProperty(key, value)
+                                        }
+                                        
+                                        // Forward cookies from WebView CookieManager to HttpURLConnection
+                                        val cookieManager = CookieManager.getInstance()
+                                        val cookies = cookieManager.getCookie(urlStr)
+                                        if (cookies != null) {
+                                            connection.setRequestProperty("Cookie", cookies)
+                                        }
+                                        
+                                        val responseCode = connection.responseCode
+                                        val responseMessage = connection.responseMessage
+                                        val contentType = connection.contentType ?: "text/html"
+                                        val encoding = connection.contentEncoding ?: "UTF-8"
+                                        
+                                        // Copy and strip x-frame-options / content-security-policy headers
+                                        val responseHeaders = mutableMapOf<String, String>()
+                                        connection.headerFields.forEach { (key, value) ->
+                                            if (key != null && !value.isEmpty()) {
+                                                val headerKey = key.lowercase()
+                                                if (headerKey != "x-frame-options" && 
+                                                    headerKey != "content-security-policy" &&
+                                                    headerKey != "content-security-policy-report-only") {
+                                                    responseHeaders[key] = value.joinToString(", ")
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Sync cookies from response headers back to WebView CookieManager
+                                        val setCookieFields = connection.headerFields["Set-Cookie"] ?: connection.headerFields["set-cookie"]
+                                        setCookieFields?.forEach { cookie ->
+                                            cookieManager.setCookie(urlStr, cookie)
+                                        }
+                                        cookieManager.flush()
+                                        
+                                        responseHeaders["Access-Control-Allow-Origin"] = "*"
+                                        responseHeaders["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+                                        responseHeaders["Access-Control-Allow-Headers"] = "*"
+                                        
+                                        val mimeType = contentType.split(";").firstOrNull()?.trim() ?: "text/html"
+                                        
+                                        return WebResourceResponse(
+                                            mimeType,
+                                            encoding,
+                                            responseCode,
+                                            responseMessage,
+                                            responseHeaders,
+                                            connection.inputStream
+                                        )
+                                    } catch (e: Exception) {
+                                        Log.e("WebViewAppView", "CORS bypass failed for $urlStr", e)
+                                    }
+                                }
+                                return super.shouldInterceptRequest(view, request)
+                            }
+
+                            override fun onPageFinished(view: WebView?, urlStr: String?) {
+                                super.onPageFinished(view, urlStr)
+                                if (urlStr != null && (urlStr.contains("photos.google.com") || urlStr.contains("google.com/photos"))) {
+                                    view?.evaluateJavascript(
+                                        "var meta = document.createElement('meta'); " +
+                                        "meta.name = 'viewport'; " +
+                                        "meta.content = 'width=1280, initial-scale=0.75, maximum-scale=5.0, user-scalable=yes'; " +
+                                        "document.getElementsByTagName('head')[0].appendChild(meta);",
+                                        null
+                                    )
+                                }
+                            }
+                        }
+                        
+                        settings.userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.databaseEnabled = true
@@ -3706,6 +3941,9 @@ fun WebViewAppView(url: String, externalKeyboardEvent: NativeKeyEvent? = null) {
                         settings.mediaPlaybackRequiresUserGesture = false
                         settings.loadWithOverviewMode = true
                         settings.useWideViewPort = true
+                        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                        CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
+                        
                         webView = this
                         loadUrl(url)
                     }
@@ -3716,6 +3954,7 @@ fun WebViewAppView(url: String, externalKeyboardEvent: NativeKeyEvent? = null) {
             },
             update = { view ->
                 if (view is WebView && view.url != url) {
+                    view.settings.userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
                     view.loadUrl(url)
                 }
             },
@@ -3745,7 +3984,7 @@ fun AppStoreView(
     val appStoreApps = remember {
         listOf(
             // Games
-            WebApp("pocket_web", "Uniblox Pocket", "https://uniblox-fun.lovable.app/pocket", "🧱", "Classic sandbox block-building game in pocket edition.", "https://img.icons8.com/color/512/minecraft-creeper.png", "Games"),
+            WebApp("pocket_web", "Uniblox Pocket Engine", "https://uniblox-fun.lovable.app/pocket", "🎮", "Next-generation 3D gaming engine and interactive virtual world playground.", R.drawable.img_uniblox_pocket, "Games"),
             WebApp("minecraft_web", "Minecraft", "https://enchanting-dasik-c072d6.netlify.app/", "⛏️", "Minecraft browser edition with block placing and world building.", "https://img.icons8.com/color/512/minecraft-dirt-block.png", "Games"),
             WebApp("bloxd_web", "Bloxd", "https://bloxd.io/", "🧱", "Bloxd.io multiplayer block builder and mini-games.", "https://img.icons8.com/fluency/512/cube.png", "Games"),
             WebApp("cuberealm_web", "Cube Realm", "https://cuberealm.io/", "🌍", "Explore and build inside a vast cubic online sandbox.", "https://img.icons8.com/color/512/earth-element.png", "Games"),
@@ -3761,6 +4000,7 @@ fun AppStoreView(
             WebApp("scratch_web", "Scratch", "https://scratch.mit.edu", "🐈", "Create interactive games, animations, and stories.", "https://img.icons8.com/color/512/scratch.png", "Utility"),
             WebApp("audilos_web", "Uniblox Audilos", "https://uniblox-audilos.ai.studio/", "🎵", "Explore audio visualization and soundscapes on AI Studio.", "https://img.icons8.com/color/512/music-soundwave.png", "Utility"),
             WebApp("drive_web", "Google Drive", "https://drive.google.com/", "📁", "Access and share your Google Drive files in cloud storage.", "https://img.icons8.com/color/512/google-drive--v3.png", "Utility"),
+            WebApp("native_photos", "Google Photos", "com.google.android.apps.photos", "🖼️", "Access, edit, and backup your Google Photos cloud library.", "https://img.icons8.com/color/512/google-photos.png", "Utility", true),
             WebApp("spotify_web", "Spotify", "https://spotify.com/", "🎵", "Listen to millions of songs, playlists, and podcasts.", "https://img.icons8.com/color/512/spotify--v1.png", "Utility"),
             WebApp("github_web", "GitHub", "https://GitHub.com/", "🐙", "Manage, review, and commit code with GitHub on Uniblox OS.", "https://img.icons8.com/fluency/512/github.png", "Utility"),
             WebApp("gemini_web", "Gemini", "https://gemini.google.com/", "✨", "Supercharge your productivity with Google's advanced Gemini AI model.", "https://img.icons8.com/color/512/google-gemini.png", "Utility"),
@@ -3833,7 +4073,7 @@ fun AppStoreView(
                     .clip(RoundedCornerShape(20.dp))
                     .background(
                         Brush.linearGradient(
-                            listOf(Color(0xFF6200EE), Color(0xFF03DAC6))
+                            listOf(Color(0xFF00C6FF), Color(0xFF0072FF))
                         )
                     )
             ) {
@@ -3844,24 +4084,24 @@ fun AppStoreView(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Next Gen Gaming",
+                        text = "Uniblox Pocket Engine",
                         color = Color.White,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold
                     )
                     Text(
-                        text = "Play your favorite games instantly with zero installation.",
-                        color = Color.White.copy(alpha = 0.8f),
+                        text = "Next-generation 3D gaming engine and interactive virtual world playground.",
+                        color = Color.White.copy(alpha = 0.9f),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { onOpenApp("https://crazygames.com/", "CrazyGames") },
+                        onClick = { onOpenApp("https://uniblox-fun.lovable.app/pocket", "Uniblox Pocket Engine") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
                     ) {
-                        Text("Get Started", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
+                        Text("Launch Engine", color = Color(0xFF0072FF), fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -4120,7 +4360,97 @@ fun BrowserView(externalKeyboardEvent: NativeKeyEvent? = null) {
             factory = { context ->
                 try {
                     WebView(context).apply {
-                        webViewClient = WebViewClient()
+                        webViewClient = object : WebViewClient() {
+                            override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+                                val urlStr = request?.url?.toString() ?: return null
+                                if (!urlStr.startsWith("http")) return null
+                                
+                                val headers = request.requestHeaders ?: emptyMap()
+                                val secFetchDest = headers["Sec-Fetch-Dest"] ?: headers["sec-fetch-dest"] ?: ""
+                                val accept = headers["Accept"] ?: headers["accept"] ?: ""
+                                
+                                // Only intercept actual framing documents (HTML inside frames/iframes)
+                                val isIframeDocument = secFetchDest == "iframe" || secFetchDest == "frame" || 
+                                                       (accept.contains("text/html") && !request.isForMainFrame)
+                                                       
+                                if (isIframeDocument && !urlStr.contains("photos.google.com") && !urlStr.contains("accounts.google.com")) {
+                                    try {
+                                        val connection = java.net.URL(urlStr).openConnection() as java.net.HttpURLConnection
+                                        connection.requestMethod = request.method
+                                        
+                                        // Forward all request headers
+                                        headers.forEach { (key, value) ->
+                                            connection.setRequestProperty(key, value)
+                                        }
+                                        
+                                        // Forward cookies from WebView CookieManager to HttpURLConnection
+                                        val cookieManager = CookieManager.getInstance()
+                                        val cookies = cookieManager.getCookie(urlStr)
+                                        if (cookies != null) {
+                                            connection.setRequestProperty("Cookie", cookies)
+                                        }
+                                        
+                                        val responseCode = connection.responseCode
+                                        val responseMessage = connection.responseMessage
+                                        val contentType = connection.contentType ?: "text/html"
+                                        val encoding = connection.contentEncoding ?: "UTF-8"
+                                        
+                                        // Copy and strip x-frame-options / content-security-policy headers
+                                        val responseHeaders = mutableMapOf<String, String>()
+                                        connection.headerFields.forEach { (key, value) ->
+                                            if (key != null && !value.isEmpty()) {
+                                                val headerKey = key.lowercase()
+                                                if (headerKey != "x-frame-options" && 
+                                                    headerKey != "content-security-policy" &&
+                                                    headerKey != "content-security-policy-report-only") {
+                                                    responseHeaders[key] = value.joinToString(", ")
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Sync cookies from response headers back to WebView CookieManager
+                                        val setCookieFields = connection.headerFields["Set-Cookie"] ?: connection.headerFields["set-cookie"]
+                                        setCookieFields?.forEach { cookie ->
+                                            cookieManager.setCookie(urlStr, cookie)
+                                        }
+                                        cookieManager.flush()
+                                        
+                                        responseHeaders["Access-Control-Allow-Origin"] = "*"
+                                        responseHeaders["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+                                        responseHeaders["Access-Control-Allow-Headers"] = "*"
+                                        
+                                        val mimeType = contentType.split(";").firstOrNull()?.trim() ?: "text/html"
+                                        
+                                        return WebResourceResponse(
+                                            mimeType,
+                                            encoding,
+                                            responseCode,
+                                            responseMessage,
+                                            responseHeaders,
+                                            connection.inputStream
+                                        )
+                                    } catch (e: Exception) {
+                                        Log.e("BrowserView", "CORS bypass failed for $urlStr", e)
+                                    }
+                                }
+                                return super.shouldInterceptRequest(view, request)
+                            }
+
+                            override fun onPageFinished(view: WebView?, urlStr: String?) {
+                                super.onPageFinished(view, urlStr)
+                                if (urlStr != null && (urlStr.contains("photos.google.com") || urlStr.contains("google.com/photos"))) {
+                                    view?.evaluateJavascript(
+                                        "var meta = document.createElement('meta'); " +
+                                        "meta.name = 'viewport'; " +
+                                        "meta.content = 'width=1280, initial-scale=0.75, maximum-scale=5.0, user-scalable=yes'; " +
+                                        "document.getElementsByTagName('head')[0].appendChild(meta);",
+                                        null
+                                    )
+                                }
+                            }
+                        }
+                        
+                        settings.userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.databaseEnabled = true
@@ -4131,6 +4461,9 @@ fun BrowserView(externalKeyboardEvent: NativeKeyEvent? = null) {
                         settings.mediaPlaybackRequiresUserGesture = false
                         settings.loadWithOverviewMode = true
                         settings.useWideViewPort = true
+                        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                        CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
+                        
                         webView = this
                         loadUrl(url)
                     }
@@ -4141,6 +4474,7 @@ fun BrowserView(externalKeyboardEvent: NativeKeyEvent? = null) {
             },
             update = { view ->
                 if (view is WebView && view.url != url) {
+                    view.settings.userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
                     view.loadUrl(url)
                 }
             },
@@ -4187,6 +4521,7 @@ fun GameEngineView() {
     AndroidView(
         factory = { context ->
             WebView(context).apply {
+                settings.userAgentString = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36"
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.databaseEnabled = true
@@ -5480,5 +5815,674 @@ fun SettingActionItem(title: String, description: String, icon: ImageVector, onC
             Text(description, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
+    }
+}
+
+@Composable
+fun StylusNotesView() {
+    val points = remember { mutableStateListOf<List<StylusPoint>>() }
+    val currentPath = remember { mutableStateListOf<StylusPoint>() }
+    var penColor by remember { mutableStateOf(Color(0xFF0072FF)) }
+    var penWidth by remember { mutableStateOf(8f) }
+    var isEraser by remember { mutableStateOf(false) }
+    
+    // Tool selection state
+    var selectedTool by remember { mutableStateOf("Pen") } // "Pen", "Calligraphy", "Eraser"
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF1E2022)) // Sleek dark canvas background
+            .padding(8.dp)
+    ) {
+        // App header bar / controls
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF2C2F33), RoundedCornerShape(12.dp))
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Pen, Calligraphy, Eraser toggles
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = { selectedTool = "Pen"; isEraser = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = if (selectedTool == "Pen") Color(0xFF0072FF) else Color.Transparent),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Icon(Icons.Default.Brush, contentDescription = "Pen", tint = Color.White, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Pen", color = Color.White, fontSize = 12.sp)
+                }
+                Button(
+                    onClick = { selectedTool = "Calligraphy"; isEraser = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = if (selectedTool == "Calligraphy") Color(0xFF0072FF) else Color.Transparent),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Icon(Icons.Default.Gesture, contentDescription = "Calligraphy", tint = Color.White, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Calligraphy", color = Color.White, fontSize = 12.sp)
+                }
+                Button(
+                    onClick = { selectedTool = "Eraser"; isEraser = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = if (selectedTool == "Eraser") Color(0xFFE91E63) else Color.Transparent),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = "Eraser", tint = Color.White, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Eraser", color = Color.White, fontSize = 12.sp)
+                }
+            }
+
+            // Stylus Status Indicator (shows active pressure features)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .background(Color.Green, CircleShape)
+                )
+                Text("Pressure Sensing Active", color = Color.LightGray, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+            }
+
+            // Undo / Clear Buttons
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                IconButton(
+                    onClick = {
+                        if (points.isNotEmpty()) {
+                            points.removeAt(points.size - 1)
+                        }
+                    },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(Icons.Default.Undo, contentDescription = "Undo", tint = Color.White, modifier = Modifier.size(18.dp))
+                }
+                IconButton(
+                    onClick = {
+                        points.clear()
+                        currentPath.clear()
+                    },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(Icons.Default.Refresh, contentDescription = "Clear All", tint = Color.White, modifier = Modifier.size(18.dp))
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Drawing Area
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0xFF0B192C)) // Dark premium grid notebook
+                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        var isDragging = false
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            val change = event.changes.firstOrNull()
+                            if (change != null) {
+                                val isStylus = change.type == PointerType.Stylus || change.type == PointerType.Eraser
+                                val activeEraser = change.type == PointerType.Eraser || isEraser
+                                
+                                if (change.pressed) {
+                                    if (!isDragging) {
+                                        // Start stroke
+                                        isDragging = true
+                                        val startPoint = StylusPoint(
+                                            x = change.position.x,
+                                            y = change.position.y,
+                                            pressure = if (isStylus) change.pressure else 1.0f,
+                                            color = if (activeEraser) Color(0xFF0B192C) else penColor,
+                                            width = if (activeEraser) penWidth * 4f else penWidth,
+                                            isCalligraphy = selectedTool == "Calligraphy"
+                                        )
+                                        currentPath.add(startPoint)
+                                    } else {
+                                        // Drag / move
+                                        val nextPoint = StylusPoint(
+                                            x = change.position.x,
+                                            y = change.position.y,
+                                            pressure = if (isStylus) change.pressure else 1.0f,
+                                            color = if (activeEraser) Color(0xFF0B192C) else penColor,
+                                            width = if (activeEraser) penWidth * 4f else penWidth,
+                                            isCalligraphy = selectedTool == "Calligraphy"
+                                        )
+                                        currentPath.add(nextPoint)
+                                    }
+                                    change.consume()
+                                } else {
+                                    if (isDragging) {
+                                        // Stroke completed
+                                        isDragging = false
+                                        if (currentPath.isNotEmpty()) {
+                                            points.add(currentPath.toList())
+                                            currentPath.clear()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                // Draw grid lines for high-quality note-taking background
+                val gridSize = 40.dp.toPx()
+                for (x in 0 until (size.width / gridSize).toInt()) {
+                    drawLine(
+                        color = Color.White.copy(alpha = 0.05f),
+                        start = Offset(x * gridSize, 0f),
+                        end = Offset(x * gridSize, size.height),
+                        strokeWidth = 1f
+                    )
+                }
+                for (y in 0 until (size.height / gridSize).toInt()) {
+                    drawLine(
+                        color = Color.White.copy(alpha = 0.05f),
+                        start = Offset(0f, y * gridSize),
+                        end = Offset(size.width, y * gridSize),
+                        strokeWidth = 1f
+                    )
+                }
+
+                // Render existing paths with pressure/tilt interpolation
+                points.forEach { path ->
+                    drawStylusPath(path)
+                }
+
+                // Render active temporary path
+                if (currentPath.isNotEmpty()) {
+                    drawStylusPath(currentPath)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Color Palette & Size Selector
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF2C2F33), RoundedCornerShape(12.dp))
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Colors: ", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+            val colors = listOf(
+                Color(0xFF0072FF), // Sky Blue
+                Color(0xFF00F2FE), // Neon Cyan
+                Color(0xFFE91E63), // Pink
+                Color(0xFFFF9F43), // Pastel Orange
+                Color(0xFF10AC84), // Jade Green
+                Color(0xFFFFFFFF)  // Clean White
+            )
+            colors.forEach { color ->
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(color, CircleShape)
+                        .border(
+                            width = if (penColor == color) 2.dp else 0.dp,
+                            color = if (penColor == color) Color.White else Color.Transparent,
+                            shape = CircleShape
+                        )
+                        .clickable { penColor = color; isEraser = false }
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text("Brush Size: ", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+            Slider(
+                value = penWidth,
+                onValueChange = { penWidth = it },
+                valueRange = 2f..32f,
+                modifier = Modifier.width(130.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = Color(0xFF0072FF),
+                    activeTrackColor = Color(0xFF0072FF)
+                )
+            )
+        }
+    }
+}
+
+data class StylusPoint(
+    val x: Float,
+    val y: Float,
+    val pressure: Float,
+    val color: Color,
+    val width: Float,
+    val isCalligraphy: Boolean = false
+)
+
+private fun DrawScope.drawStylusPath(points: List<StylusPoint>) {
+    if (points.size < 2) return
+    for (i in 0 until points.size - 1) {
+        val p1 = points[i]
+        val p2 = points[i + 1]
+        
+        // Stroke width is beautifully scaled by stylus pressure!
+        val strokeWidthValue = p1.width * p1.pressure
+        
+        if (p1.isCalligraphy) {
+            // Draw a calligraphy flat ribbon shape
+            val angle = 45.0f * (Math.PI / 180.0f).toFloat()
+            val dx = Math.cos(angle.toDouble()).toFloat() * strokeWidthValue
+            val dy = Math.sin(angle.toDouble()).toFloat() * strokeWidthValue
+            
+            val path = Path().apply {
+                moveTo(p1.x - dx, p1.y - dy)
+                lineTo(p1.x + dx, p1.y + dy)
+                lineTo(p2.x + dx, p2.y + dy)
+                lineTo(p2.x - dx, p2.y - dy)
+                close()
+            }
+            drawPath(path = path, color = p1.color)
+        } else {
+            // Standard rounded pressure stroke
+            drawLine(
+                color = p1.color,
+                start = Offset(p1.x, p1.y),
+                end = Offset(p2.x, p2.y),
+                strokeWidth = strokeWidthValue,
+                cap = StrokeCap.Round
+            )
+        }
+    }
+}
+
+@Composable
+fun ControlCenterPanel(
+    context: Context,
+    currentTheme: OSTheme,
+    onThemeChange: (OSTheme) -> Unit,
+    onClose: () -> Unit,
+    showTaskbarBackground: Boolean,
+    onToggleTaskbarBackground: () -> Unit,
+    onAppOpen: (App, String?, String?, Drawable?) -> Unit
+) {
+    val themeColors = getOSThemeColors(currentTheme)
+    val fontColor = if (currentTheme == OSTheme.Developer) Color(0xFF00FF00) else Color.White
+
+    // Audio volume management
+    val audioManager = remember { context.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
+    val maxVolume = remember { audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC).toFloat() }
+    var currentVolume by remember { mutableStateOf(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()) }
+
+    // Screen brightness management
+    val activity = context as? Activity
+    var currentBrightness by remember {
+        mutableStateOf(
+            activity?.window?.attributes?.screenBrightness?.let { if (it < 0) 0.5f else it } ?: 0.5f
+        )
+    }
+
+    // Battery manager
+    val batteryManager = remember { context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager }
+    val batteryPct = remember {
+        try {
+            val pct = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+            if (pct <= 0) 100 else pct
+        } catch (e: Exception) {
+            100
+        }
+    }
+
+    // Mock quick settings toggles (retains state)
+    var isWifiOn by remember { mutableStateOf(true) }
+    var isBluetoothOn by remember { mutableStateOf(false) }
+    var isDndOn by remember { mutableStateOf(false) }
+
+    Surface(
+        modifier = Modifier
+            .width(360.dp)
+            .wrapContentHeight()
+            .testTag("control_center_panel")
+            .shadow(12.dp, RoundedCornerShape(24.dp)),
+        shape = RoundedCornerShape(24.dp),
+        color = if (themeColors.isGlass) Color.Black.copy(alpha = 0.75f) else themeColors.background.copy(alpha = 0.95f),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.15f))
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(20.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Header: Date & Battery
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    val sdf = java.text.SimpleDateFormat("EEEE, MMMM d", java.util.Locale.getDefault())
+                    Text(
+                        text = sdf.format(java.util.Date()),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = fontColor
+                    )
+                    Text(
+                        text = "System Status",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = fontColor.copy(alpha = 0.6f)
+                    )
+                }
+
+                // Battery Badge
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .background(Color.White.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "🔋 $batteryPct%",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = fontColor
+                    )
+                }
+            }
+
+            Divider(color = Color.White.copy(alpha = 0.1f))
+
+            // Quick Toggle Grid (2x2)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    // Wifi Toggle
+                    QuickToggleTile(
+                        label = "WiFi",
+                        isActive = isWifiOn,
+                        icon = Icons.Default.Wifi,
+                        fontColor = fontColor,
+                        themeColors = themeColors,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            isWifiOn = !isWifiOn
+                            try {
+                                if (!isWifiOn) {
+                                    context.startActivity(android.content.Intent(android.provider.Settings.ACTION_WIFI_SETTINGS))
+                                }
+                            } catch (e: Exception) {}
+                        }
+                    )
+                    // Bluetooth Toggle
+                    QuickToggleTile(
+                        label = "Bluetooth",
+                        isActive = isBluetoothOn,
+                        icon = Icons.Default.Bluetooth,
+                        fontColor = fontColor,
+                        themeColors = themeColors,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            isBluetoothOn = !isBluetoothOn
+                            try {
+                                context.startActivity(android.content.Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS))
+                            } catch (e: Exception) {}
+                        }
+                    )
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    // Do Not Disturb Toggle
+                    QuickToggleTile(
+                        label = "DND",
+                        isActive = isDndOn,
+                        icon = if (isDndOn) Icons.Default.NotificationsOff else Icons.Default.NotificationsActive,
+                        fontColor = fontColor,
+                        themeColors = themeColors,
+                        modifier = Modifier.weight(1f),
+                        onClick = { isDndOn = !isDndOn }
+                    )
+                    // Taskbar background / glass toggle
+                    QuickToggleTile(
+                        label = "Glass Taskbar",
+                        isActive = showTaskbarBackground,
+                        icon = Icons.Default.Brush,
+                        fontColor = fontColor,
+                        themeColors = themeColors,
+                        modifier = Modifier.weight(1f),
+                        onClick = { onToggleTaskbarBackground() }
+                    )
+                }
+            }
+
+            Divider(color = Color.White.copy(alpha = 0.1f))
+
+            // Sliders Section
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                // Volume Slider
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = if (currentVolume > 0) Icons.Default.VolumeUp else Icons.Default.VolumeOff,
+                        contentDescription = "Volume",
+                        tint = fontColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Slider(
+                        value = currentVolume,
+                        onValueChange = { newValue ->
+                            currentVolume = newValue
+                            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newValue.toInt(), 0)
+                        },
+                        valueRange = 0f..maxVolume,
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            activeTrackColor = themeColors.primary,
+                            thumbColor = themeColors.primary,
+                            inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                        )
+                    )
+                }
+
+                // Brightness Slider
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Brightness5,
+                        contentDescription = "Brightness",
+                        tint = fontColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Slider(
+                        value = currentBrightness,
+                        onValueChange = { newValue ->
+                            currentBrightness = newValue
+                            activity?.let { act ->
+                                val lp = act.window.attributes
+                                lp.screenBrightness = newValue
+                                act.window.attributes = lp
+                            }
+                        },
+                        valueRange = 0.05f..1.0f,
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            activeTrackColor = themeColors.primary,
+                            thumbColor = themeColors.primary,
+                            inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                        )
+                    )
+                }
+            }
+
+            Divider(color = Color.White.copy(alpha = 0.1f))
+
+            // Theme Selection Row
+            Column {
+                Text(
+                    text = "Personalization Themes",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = fontColor.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    OSTheme.values().forEach { themeOpt ->
+                        val optColors = getOSThemeColors(themeOpt)
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(CircleShape)
+                                .background(optColors.primary)
+                                .border(
+                                    width = 2.dp,
+                                    color = if (currentTheme == themeOpt) Color.White else Color.Transparent,
+                                    shape = CircleShape
+                                )
+                                .clickable { onThemeChange(themeOpt) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (currentTheme == themeOpt) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Selected",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Divider(color = Color.White.copy(alpha = 0.1f))
+
+            // Footer Actions (Settings shortcuts & Power Options)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Settings & Terminal Shortcuts
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    IconButton(
+                        onClick = {
+                            onAppOpen(App.Settings, null, "Settings", null)
+                            onClose()
+                        },
+                        modifier = Modifier
+                            .background(Color.White.copy(alpha = 0.1f), CircleShape)
+                            .size(36.dp)
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings", tint = fontColor, modifier = Modifier.size(16.dp))
+                    }
+                    IconButton(
+                        onClick = {
+                            onAppOpen(App.Terminal, null, "Terminal", null)
+                            onClose()
+                        },
+                        modifier = Modifier
+                            .background(Color.White.copy(alpha = 0.1f), CircleShape)
+                            .size(36.dp)
+                    ) {
+                        Icon(Icons.Default.Terminal, contentDescription = "Terminal", tint = fontColor, modifier = Modifier.size(16.dp))
+                    }
+                }
+
+                // Power Options Trigger
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier
+                        .background(Color.Red.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+                        .clickable {
+                            Toast.makeText(context, "Powering Down Uniblox OS...", Toast.LENGTH_LONG).show()
+                        }
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PowerSettingsNew,
+                        contentDescription = "Power",
+                        tint = Color.Red,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "Power",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun QuickToggleTile(
+    label: String,
+    isActive: Boolean,
+    icon: ImageVector,
+    fontColor: Color,
+    themeColors: OSThemeColors,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .height(54.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(
+                if (isActive) themeColors.primary else Color.White.copy(alpha = 0.08f)
+            )
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(if (isActive) Color.White.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = if (isActive) Color.White else fontColor,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+        Column(verticalArrangement = Arrangement.Center) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = if (isActive) Color.White else fontColor,
+                maxLines = 1
+            )
+            Text(
+                text = if (isActive) "Active" else "Off",
+                style = MaterialTheme.typography.labelSmall,
+                color = if (isActive) Color.White.copy(alpha = 0.8f) else fontColor.copy(alpha = 0.5f),
+                maxLines = 1
+            )
+        }
     }
 }
